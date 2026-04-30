@@ -10,6 +10,17 @@ LR = 0.1
 EPOCHS = 1000
 
 
+def plot_scatter_raw(surface, prix):
+    plt.figure()
+    plt.scatter(surface, prix, s=15)
+    plt.xlabel("Surface (m²)")
+    plt.ylabel("Prix (€)")
+    plt.title("Surface vs Prix (données brutes)")
+    plt.tight_layout()
+    plt.savefig("plots/scatter_raw.png", dpi=150)
+    plt.close()
+
+
 def plot_predictions(x, y, a_l, b_l, a_q, b_q, c_q):
     # Scatter + regression curves
     x_plot = np.linspace(x.min(), x.max(), 300)
@@ -52,6 +63,7 @@ def main():
     a_q, b_q, c_q, hist_q = gradient_descent_quadratic(x, y, LR, EPOCHS)
 
     # Save figures
+    plot_scatter_raw(surface, prix)
     plot_predictions(x, y, a_l, b_l, a_q, b_q, c_q)
     plot_rmse(hist_l, hist_q)
 

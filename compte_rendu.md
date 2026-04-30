@@ -1,41 +1,80 @@
 # Compte rendu — TP Régression quadratique (MSE)
+Ali Benaqa
 
-## 1. Dérivation des gradients
+---
 
-On définit l'erreur sur le i-ème exemple :
+## PARTIE A
 
-$$e_i = \hat{y}_i - y_i \quad \text{avec} \quad \hat{y}_i = ax_i^2 + bx_i + c$$
+**1) Pourquoi la standardisation aide la descente de gradient ?**
+La standardisation met toutes les variables sur la même échelle, ce qui stabilise et accélère la convergence de la descente de gradient.
 
-La loss MSE est :
+**2) Que se passe-t-il si on ne normalise pas (surfaces en dizaines, prix en centaines de milliers) ?**
+Le gradient lié au prix serait beaucoup plus grand que celui de la surface. Le learning rate serait inadapté pour l'une des deux variables : la descente de gradient divergerait ou convergerait très lentement.
 
-$$L(a, b, c) = \frac{1}{n} \sum_{i=1}^{n} e_i^2$$
+**3) La relation semble-t-elle parfaitement linéaire ? Que pourrait apporter un modèle quadratique ?**
+La relation est quasiment linéaire mais pas tout à fait. Un modèle quadratique peut introduire une légère courbure pour mieux s'ajuster aux données.
 
-En appliquant la règle de dérivation en chaîne :
+---
 
-$$\frac{\partial L}{\partial a} = \frac{1}{n} \sum_{i=1}^{n} 2e_i \cdot \frac{\partial \hat{y}_i}{\partial a} = \frac{2}{n} \sum_{i=1}^{n} e_i x_i^2$$
+## PARTIE B
 
-$$\frac{\partial L}{\partial b} = \frac{2}{n} \sum_{i=1}^{n} e_i x_i$$
+**1) Quelles sont les trois poids du modèle ?**
+Les 3 poids sont : a, b, c dans ŷ = ax² + bx + c.
 
-$$\frac{\partial L}{\partial c} = \frac{2}{n} \sum_{i=1}^{n} e_i$$
+**2) En quoi ce modèle est-il plus flexible qu'un modèle affine ?**
+Contrairement à une droite, le modèle quadratique peut former une courbure. Il s'adapte mieux à des jeux de données dont la relation n'est pas strictement linéaire.
 
-Le facteur $\frac{1}{n}$ provient de la moyenne dans la MSE. La dérivée de $e_i^2$ par rapport à $\hat{y}_i$ donne $2e_i$, et les dérivées partielles de $\hat{y}_i$ par rapport à $a$, $b$, $c$ donnent respectivement $x_i^2$, $x_i$, $1$.
+**3) Quelle différence entre MSE et RMSE ? Pourquoi la RMSE est plus lisible ?**
+La MSE est exprimée en unités au carré (erreur quadratique), la RMSE est sa racine carrée donc dans la même unité que la variable cible. Elle est plus lisible car directement interprétable dans le contexte d'étude.
 
-## 2. Comparaison linéaire vs quadratique
+---
 
-| Modèle       | RMSE finale (données normalisées) |
-|--------------|-----------------------------------|
-| Linéaire     | 0.1076                            |
-| Quadratique  | 0.1065                            |
+## PARTIE C
 
-Le modèle quadratique obtient une RMSE légèrement inférieure, ce qui indique un meilleur ajustement. Visuellement, la courbe quadratique épouse mieux la légère courbure du nuage de points.
+**1) Quelle est la dérivée de (ŷ − y)² par rapport à ŷ ?**
+2(ŷ − y) = 2eᵢ
 
-Cependant, le gain est faible (~1 %), car la relation surface → prix est quasi-linéaire dans ce dataset. Le modèle quadratique n'apporte pas un avantage décisif ici, et présente un risque d'**overfitting** plus élevé : avec un paramètre supplémentaire, il peut s'adapter au bruit plutôt qu'à la tendance réelle, surtout sur de petits jeux de données.
+**2) Quelle est la dérivée de ŷ = ax² + bx + c par rapport à a, b, c ?**
+- Par rapport à a : xᵢ²
+- Par rapport à b : xᵢ
+- Par rapport à c : 1
 
-## 3. Commentaire sur le learning rate
+**3) Où intervient le facteur 1/n ?**
+Le facteur 1/n vient de la définition de la MSE (Mean Squared Error) qui est une moyenne des erreurs au carré sur les n exemples.
 
-Le learning rate $\eta = 0.1$ a été utilisé avec 1 000 epochs. La RMSE converge de façon régulière et décroissante dès les premières epochs, ce qui confirme que le learning rate est bien calibré.
+Les gradients obtenus par la règle de dérivation en chaîne sont donc :
 
-- **Learning rate trop grand** : la RMSE oscille ou diverge (les mises à jour dépassent le minimum).
-- **Learning rate trop petit** : la convergence est très lente, le modèle n'atteint pas le minimum en un nombre raisonnable d'epochs.
+    ∂L/∂a = (2/n) Σ eᵢ xᵢ²
+    ∂L/∂b = (2/n) Σ eᵢ xᵢ
+    ∂L/∂c = (2/n) Σ eᵢ
 
-La standardisation des données (moyenne 0, écart-type 1) est essentielle pour que ce learning rate unique fonctionne bien sur $x$ et $y$ d'échelles très différentes (surfaces en m², prix en centaines de milliers d'euros).
+---
+
+## PARTIE D
+
+**1) À quoi sert le learning rate η ?**
+Il contrôle la taille du pas effectué à chaque itération dans le sens opposé au gradient. Plus il est petit, plus on converge précisément mais lentement ; plus il est grand, plus on risque de dépasser le minimum.
+
+**2) Deux symptômes d'un learning rate trop grand :**
+- La RMSE oscille ou diverge, sans jamais se stabiliser.
+- Les paramètres dépassent le minimum et "rebondissent" sans converger.
+
+**3) Symptôme d'un learning rate trop petit :**
+- La convergence est extrêmement lente, le temps de calcul devient prohibitif.
+
+---
+
+## PARTIE E
+
+**1) La RMSE doit-elle être strictement décroissante à chaque epoch ?**
+Non, elle doit être globalement décroissante. Si elle oscille fortement, cela indique un problème avec le learning rate. Plus elle diminue, plus le modèle converge vers une prédiction propre.
+
+**2) Quand peut-on arrêter l'entraînement (early stopping) ?**
+On peut arrêter lorsque l'amélioration de la RMSE entre deux epochs consécutives devient inférieure à un seuil (ex. 1e-6), ce qui signifie qu'il n'y aura plus d'amélioration significative.
+
+---
+
+## PARTIE F
+
+**1) Le modèle quadratique fait-il toujours mieux ?**
+Non. Dans notre cas, la courbure reste minime car les données forment naturellement une droite. Le gain en RMSE est faible (~1 % : 0.1076 vs 0.1065). De plus, le modèle quadratique, ayant un paramètre supplémentaire, risque de faire de l'overfitting : il peut enregistrer les variations aléatoires du jeu d'entraînement et généraliser moins bien sur de nouvelles données. La régression linéaire reste plus robuste dans ce contexte.
