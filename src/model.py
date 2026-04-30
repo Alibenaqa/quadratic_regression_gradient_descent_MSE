@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def linear_predict(a, b, x):
     # Linear: ax + b
     return a * x + b
