@@ -18,6 +18,7 @@ def plot_scatter_raw(surface, prix):
     plt.title("Surface vs Prix (données brutes)")
     plt.tight_layout()
     plt.savefig("plots/scatter_raw.png", dpi=150)
+    plt.show()
     plt.close()
 
 
@@ -35,6 +36,7 @@ def plot_predictions(x, y, a_l, b_l, a_q, b_q, c_q):
     plt.legend()
     plt.tight_layout()
     plt.savefig("plots/regression_comparison.png", dpi=150)
+    plt.show()
     plt.close()
 
 
@@ -49,6 +51,7 @@ def plot_rmse(hist_l, hist_q):
     plt.legend()
     plt.tight_layout()
     plt.savefig("plots/rmse_epochs.png", dpi=150)
+    plt.show()
     plt.close()
 
 
